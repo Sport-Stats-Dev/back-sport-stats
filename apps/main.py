@@ -19,6 +19,10 @@ ma = Marshmallow(app)
 from api.user_api import user_blueprint
 app.register_blueprint(user_blueprint)
 
+# Create database
+from model.user import *
+db.create_all()
+
 # Hello World
 @app.route('/', methods=['GET'])
 def hello_sportstats():
@@ -26,5 +30,4 @@ def hello_sportstats():
 
 # Run Server
 if __name__ == '__main__':
-  db.create_all()
   app.run(debug=True)
