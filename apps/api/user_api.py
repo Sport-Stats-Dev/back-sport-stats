@@ -9,10 +9,11 @@ from main import db
 
 @user_blueprint.route(Routes.USER_ROUTE, methods=['POST'])
 def add_user():
+  email = request.json['email']
   username = request.json['username']
   password = request.json['password']
 
-  new_user = User(username, password)
+  new_user = User(email, username, password)
 
   db.session.add(new_user)
   db.session.commit()
@@ -21,14 +22,20 @@ def add_user():
 
 @user_blueprint.route(Routes.USER_ROUTE, methods=['GET'])
 def get_all_users():
-  all_products = User.query.all()
+  all_users = User.query.all()
   
-  result = users_schema.dump(all_products)
+  result = users_schema.dump(all_users)
 
   return jsonify(result)
 
+@user_blueprint.route(Routes.USER_ROUTE + '/username=<username>', methods=['GET'])
+def get_user_by_username(username):
+  user = User.query.filter_by(username=username).first_or_404()
+
+  return user_schema.jsonify(user)
+
 @user_blueprint.route(Routes.USER_ROUTE + '/<id>', methods=['GET'])
-def get_user(id):
+def get_user_by_id(id):
   user = User.query.get_or_404(id)
 
   return user_schema.jsonify(user)
@@ -37,9 +44,11 @@ def get_user(id):
 def update_user(id):
   user = User.query.get(id)
 
+  email = request.json['email']
   username = request.json['username']
   password = request.json['password']
 
+  user.email = email
   user.username = username
   user.password = password
 
