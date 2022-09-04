@@ -3,4 +3,6 @@ class Routes:
     USER_ID = USER + '/<id>'
     USERS = '/users'
 
+    LOGIN = '/login'
+
     EXERCISE = '/exercise'

@@ -5,14 +5,16 @@ from flask_restful import Api
 import os
 import apps.shared as shared
 
+
 # Init app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# Database
+# Config
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_SORT_KEYS'] = False
+app.config['SECRET_KEY'] = 'thisissecret'
 
 # Inits
 shared.db = SQLAlchemy(app)
