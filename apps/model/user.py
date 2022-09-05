@@ -1,5 +1,5 @@
 from apps.shared import db, ma
-from apps.model.exercise import ExerciseSchema
+from apps.model.training import TrainingSchema
 
 
 class User(db.Model):
@@ -21,9 +21,9 @@ class User(db.Model):
         nullable=False
     )
 
-    exercises = db.relationship(
-        "Exercise",
-        order_by="Exercise.id"
+    trainings = db.relationship(
+        "Training",
+        order_by="Training.id"
     )
 
     def __init__(self, email, password):
@@ -40,7 +40,7 @@ class FullUserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         ordered = True
     
-    exercises = ma.Nested(ExerciseSchema, many=True) 
+    trainings = ma.Nested(TrainingSchema, many=True) 
 
 # Init schema
 user_schema = UserSchema()

@@ -29,7 +29,7 @@ def token_required(func):
         if current_user is None:
             abort(401) # user doesn't exist
 
-        g.current_user = current_user
+        g._current_user = current_user
 
         return func(*args, **kwargs)
 
