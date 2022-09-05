@@ -32,7 +32,7 @@ def hello_sportstats():
 
 
 from apps.model.user import *
-from apps.model.exercise import *
+from apps.model.training import *
 shared.db.create_all()
 
 # Run Server

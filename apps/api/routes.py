@@ -1,8 +1,12 @@
 class Routes:
     USER = '/user'
     USER_ID = USER + '/<id>'
-    USERS = '/users'
+    USERS = USER + 's'
 
     LOGIN = '/login'
 
-    EXERCISE = '/exercise'
+    CURRENT_USER = '/user'
+
+    TRAINING = CURRENT_USER + '/training'
+    TRAINING_ID = TRAINING + '/<id>'
+    TRAININGS = TRAINING + 's'
