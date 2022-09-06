@@ -4,17 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 
-from apps.model.user import User, user_schema, users_schema
+from apps.model.user import User
 from apps.shared import db
-from apps.core.core_resource import AuthResource
 
 
-class UserApi(Resource):
-    def get(self, id):
-        user = User.query.get_or_404(id)
-        
-        return user_schema.jsonify(user)
-
+class RegisterApi(Resource):
     def post(self):
         payload = request.get_json()
 
@@ -32,12 +26,6 @@ class UserApi(Resource):
         db.session.commit()
         
         return 'Success', 200
-
-class UserListApi(AuthResource):
-    def get(self):
-        all_users = User.query.all()
-
-        return jsonify(users_schema.dump(all_users))
 
 class LoginApi(Resource):
     def post(self):
