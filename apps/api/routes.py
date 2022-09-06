@@ -1,12 +1,11 @@
 class Routes:
-    USER = '/user'
-    USER_ID = USER + '/<id>'
-    USERS = USER + 's'
-
-    LOGIN = '/login'
+    REGISTER_PATH = '/register'
+    LOGIN_PATH = '/login'
 
     CURRENT_USER = '/user'
 
-    TRAINING = CURRENT_USER + '/training'
-    TRAINING_ID = TRAINING + '/<id>'
-    TRAININGS = TRAINING + 's'
+    TRAINING_PATH = CURRENT_USER + '/trainings'
+    TRAINING_ID_PATH = TRAINING_PATH + '/<training_id>'
+
+    SET_PATH = TRAINING_ID_PATH + '/sets'
+    SET_ID_PATH = SET_PATH + '/<set_id>'

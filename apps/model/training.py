@@ -1,3 +1,4 @@
+from apps.model.set import SetSchema
 from apps.shared import db, ma
 
 
@@ -24,6 +25,12 @@ class Training(db.Model):
         db.String(2000)
     )
 
+    sets = db.relationship(
+        "Set",
+        order_by="Set.id",
+        lazy="dynamic"
+    )
+
     def __init__(self, user_id, date, comment):
         self.user_id = user_id
         self.date = date
@@ -33,6 +40,8 @@ class TrainingSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Training
         ordered = True
+    
+    sets = ma.Nested(SetSchema, many=True) 
 
 # Init schema
 training_schema = TrainingSchema()
