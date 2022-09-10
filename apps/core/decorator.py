@@ -1,35 +1,37 @@
-from flask import g, current_app
+from flask import g
 from flask_restful import request, abort
-import jwt
 from functools import wraps
 
+from apps.core.tools import decode_token
 from apps.model.user import User
+from apps.shared import current_user
 
 
-def token_required(func):
+def authenticate(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         token = None
 
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+        if 'token' in request.cookies:
+            token = request.cookies['token']
+            access_token = decode_token(token, True)
 
-        if not token:
-            abort(401) # token is missing
+            if access_token is not None:
+                g.access_token = access_token
+                user = User.query.filter_by(id=access_token['user_id']).first()
 
-        try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], "HS256")
-        except jwt.exceptions.DecodeError:
-            abort(401) # token is invalid
-        except jwt.exceptions.ExpiredSignatureError:
-            abort(401) # token expirated
+                if user is not None:
+                    g._current_user = user
 
-        current_user = User.query.filter_by(id=data['id']).first()
+        return func(*args, **kwargs)
 
+    return decorated
+
+def auth_requiered(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
         if current_user is None:
-            abort(401) # user doesn't exist
-
-        g._current_user = current_user
+            abort(401) # user isn't logged
 
         return func(*args, **kwargs)
 

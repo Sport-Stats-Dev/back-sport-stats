@@ -1,9 +1,8 @@
-from flask import jsonify, current_app
+from flask import jsonify, current_app, make_response, g
 from flask_restful import Resource, request, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
-import datetime
 
+from apps.core.tools import add_token_to_response, refresh_access_token
 from apps.model.user import User
 from apps.shared import db
 
@@ -19,7 +18,7 @@ class RegisterApi(Resource):
             abort(401) # missing arguments
             
         if User.query.filter_by(email=email).first() is not None:
-            abort(401) # existing user
+            abort(409) # existing user
 
         new_user = User(email, hashed_password)
         db.session.add(new_user)
@@ -45,9 +44,10 @@ class LoginApi(Resource):
         if not check_password_hash(user.password, payload['password']):
             abort(401) # passwords doesn't match
 
-        token = jwt.encode({
-            'id' : user.id,
-            'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
-        }, current_app.config['SECRET_KEY'])
+        payload = {'user_id': user.id}
+        token = refresh_access_token(payload)
+
+        response = current_app.make_response(jsonify({'token': token}))
+        add_token_to_response(response, token)
         
-        return jsonify({'token' : token})
+        return response
