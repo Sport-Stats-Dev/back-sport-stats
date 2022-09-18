@@ -9,28 +9,18 @@ import apps.controller.training_controller as training_controller
 
 class SetApi(AuthResource):
     def get(self, training_id, set_id):
-        set = controller.getSet(training_id, set_id)
+        set = controller.get_set(training_id, set_id)
 
         return set_schema.jsonify(set)
 
     def put(self, training_id, set_id):
-        set = controller.getSet(training_id, set_id)
         payload = request.get_json()
-
-        order = payload['order']
-        reps = payload['reps']
-        weight = payload['weight']
-
-        set.order = order
-        set.reps = reps
-        set.weight = weight
-
-        db.session.commit()
+        controller.set_set(payload, training_id, set_id=set_id)
 
         return 'Success', 200
 
     def delete(self, training_id, set_id):
-        set = controller.getSet(training_id, set_id)
+        set = controller.get_set(training_id, set_id)
 
         db.session.delete(set)
         db.session.commit()
@@ -45,13 +35,6 @@ class SetListApi(AuthResource):
 
     def post(self, training_id):
         payload = request.get_json()
-
-        order = payload['order']
-        reps = payload['reps']
-        weight = payload['weight']
-
-        new_set = Set(training_id, order, reps, weight)
-        db.session.add(new_set)
-        db.session.commit()
+        controller.set_set(payload, training_id)
         
         return 'Success', 200
