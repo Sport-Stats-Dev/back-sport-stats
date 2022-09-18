@@ -4,25 +4,12 @@ from functools import wraps
 
 from apps.core.tools import decode_token
 from apps.model.user import User
-from apps.shared import current_user
 
 
-def authenticate(func):
+def auth(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        token = None
-
-        if 'token' in request.cookies:
-            token = request.cookies['token']
-            access_token = decode_token(token, True)
-
-            if access_token is not None:
-                g.access_token = access_token
-                user = User.query.filter_by(id=access_token['user_id']).first()
-
-                if user is not None:
-                    g._current_user = user
-
+        auth_user(False)
         return func(*args, **kwargs)
 
     return decorated
@@ -30,9 +17,28 @@ def authenticate(func):
 def auth_requiered(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        if current_user is None:
-            abort(401) # user isn't logged
+        auth_user(True)
 
         return func(*args, **kwargs)
 
     return decorated
+
+def auth_user(required: bool):
+    token = None
+
+    if 'token' in request.cookies:
+        token = request.cookies['token']
+        access_token = decode_token(token, not required)
+
+        if access_token is not None:
+            g.access_token = access_token
+            user = User.query.filter_by(id=access_token['user_id']).first()
+
+            if user is None and required:
+                abort(401) # user doesn't exist
+
+            if user is not None:
+                g._current_user = user
+
+    elif required:
+        abort(401) # token is missing
