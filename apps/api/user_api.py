@@ -12,7 +12,7 @@ class RegisterApi(Resource):
         payload = request.get_json()
 
         email = payload['email']
-        hashed_password = generate_password_hash(payload['password'], method='sha256')
+        hashed_password = generate_password_hash(payload['password'], method='sha256') # TODO : changer de methode de cryptage (md5 ?)
         
         if email is None or payload['password'] is None:
             abort(401) # missing arguments

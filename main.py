@@ -31,7 +31,7 @@ app.register_blueprint(api_blueprint)
 def generate_new_token(response):
     access_token = getattr(g, 'access_token', None)
 
-    if access_token:
+    if access_token is not None:
         new_token = refresh_access_token(access_token)
         add_token_to_response(response, new_token)
 

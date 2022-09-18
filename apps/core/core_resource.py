@@ -1,12 +1,12 @@
 from flask_restful import Resource
 
-from apps.core.decorator import authenticate, auth_requiered
+from apps.core.decorator import auth, auth_requiered
 
 
 class CoreResource(Resource):
 
-    method_decorators = [authenticate]
+    method_decorators = [auth]
 
 class AuthResource(Resource):
 
-    method_decorators = [authenticate, auth_requiered]
+    method_decorators = [auth_requiered]

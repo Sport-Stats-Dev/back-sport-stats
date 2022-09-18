@@ -23,6 +23,7 @@ def decode_token(token, ignore_errors=False):
     except jwt.exceptions.DecodeError:
         if not ignore_errors: abort(401) # token is invalid
     except jwt.exceptions.ExpiredSignatureError:
+        # TODO : renvoyer token expirer pour deco l'user OU date d'expiration sur le cookie de token initial
         if not ignore_errors: abort(401) # token expirated
 
     return access_token
