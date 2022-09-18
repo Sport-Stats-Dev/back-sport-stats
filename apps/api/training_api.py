@@ -4,6 +4,7 @@ from apps.model.training import Training, training_schema, trainings_schema
 from apps.shared import db, current_user
 from apps.core.core_resource import AuthResource
 import apps.controller.training_controller as controller
+import apps.controller.set_controller as set_controller
 
 
 class TrainingApi(AuthResource):
@@ -50,4 +51,11 @@ class TrainingListApi(AuthResource):
         db.session.add(new_training)
         db.session.commit()
         
+        if payload['sets']:
+            sets = payload['sets']
+            for set in sets:
+                set_controller.set_set(set, new_training.id, commit_database=False)
+        
+        db.session.commit()
+
         return 'Success', 200
