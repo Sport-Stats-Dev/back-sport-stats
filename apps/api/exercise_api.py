@@ -1,0 +1,39 @@
+from flask_restful import request
+
+from apps.shared import db, current_user
+from apps.core.core_resource import AuthResource
+import apps.controller.exercise_controller as controller
+from apps.model.exercise import Exercise, exercise_schema, exercises_schema
+
+
+class ExerciseApi(AuthResource):
+    def get(self, exercise_id):
+        exercise = controller.get_exercise(exercise_id)
+
+        return exercise_schema.jsonify(exercise)
+
+    def put(self, exercise_id):
+        payload = request.get_json()
+        controller.set_exercise(payload, exercise_id)
+
+        return 'Success', 200
+
+    def delete(self, exercise_id):
+        exercise = controller.get_exercise(exercise_id)
+
+        db.session.delete(exercise)
+        db.session.commit()
+
+        return 'Success', 200
+
+class ExerciseListApi(AuthResource):
+    def get(self):
+        exercises = Exercise.query.filter_by(user_id=current_user.id).all()
+        
+        return exercises_schema.dump(exercises)
+
+    def post(self):
+        payload = request.get_json()
+        controller.set_exercise(payload)
+        
+        return 'Success', 200
