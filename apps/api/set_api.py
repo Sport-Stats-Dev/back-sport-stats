@@ -1,6 +1,6 @@
 from flask_restful import request
 
-from apps.model.set import Set, set_schema, sets_schema
+from apps.model.set import set_schema, sets_schema
 from apps.shared import db
 from apps.core.core_resource import AuthResource
 import apps.controller.set_controller as controller

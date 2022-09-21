@@ -47,6 +47,7 @@ def cors(response):
 from apps.model.user import *
 from apps.model.training import *
 from apps.model.set import *
+from apps.model.exercise import *
 shared.db.create_all()
 
 # Run Server

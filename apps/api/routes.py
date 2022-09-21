@@ -9,3 +9,6 @@ class Routes:
 
     SET_PATH = TRAINING_ID_PATH + '/sets'
     SET_ID_PATH = SET_PATH + '/<set_id>'
+
+    EXERCISE_PATH = CURRENT_USER + '/exercises'
+    EXERCISE_ID_PATH = EXERCISE_PATH + '/<exercise_id>'
