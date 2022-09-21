@@ -42,6 +42,7 @@ def cors(response):
     response.headers.add("Access-Control-Allow-Origin", "http://localhost:4200")
     response.headers.add("Access-Control-Allow-Headers", "content-type")
     response.headers.add("Access-Control-Allow-Credentials", "true")
+    response.headers.add("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE")
     return response
 
 from apps.model.user import *
