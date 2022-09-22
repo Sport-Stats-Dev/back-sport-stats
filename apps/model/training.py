@@ -1,3 +1,4 @@
+from apps.model.exercise import ExerciseSchema
 from apps.model.set import SetSchema
 from apps.shared import db, ma
 
@@ -13,6 +14,12 @@ class Training(db.Model):
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
+        nullable=False
+    )
+    
+    exercise_id = db.Column(
+        db.Integer,
+        db.ForeignKey("exercise.id"),
         nullable=False
     )
 
@@ -31,8 +38,14 @@ class Training(db.Model):
         lazy="dynamic"
     )
 
-    def __init__(self, user_id, date, comment):
+    exercise = db.relationship(
+        "Exercise",
+        order_by="Exercise.id"
+    )
+
+    def __init__(self, user_id, exercise_id, date, comment):
         self.user_id = user_id
+        self.exercise_id = exercise_id
         self.date = date
         self.comment = comment
 
@@ -41,7 +54,8 @@ class TrainingSchema(ma.SQLAlchemyAutoSchema):
         model = Training
         ordered = True
     
-    sets = ma.Nested(SetSchema, many=True) 
+    sets = ma.Nested(SetSchema, many=True)
+    exercise = ma.Nested(ExerciseSchema)
 
 # Init schema
 training_schema = TrainingSchema()
