@@ -4,7 +4,7 @@ from apps.model.set import Set
 from apps.shared import db
 import apps.controller.training_controller as training_controller
 
-def get_set(training_id, set_id):
+def get_set(training_id, set_id) -> Set:
     set = Set.query.get_or_404(set_id)
     training = training_controller.getTraining(training_id)
 

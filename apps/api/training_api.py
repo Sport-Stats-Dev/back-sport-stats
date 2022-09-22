@@ -5,6 +5,7 @@ from apps.shared import db, current_user
 from apps.core.core_resource import AuthResource
 import apps.controller.training_controller as controller
 import apps.controller.set_controller as set_controller
+import apps.controller.exercise_controller as exercise_controller
 
 
 class TrainingApi(AuthResource):
@@ -17,9 +18,11 @@ class TrainingApi(AuthResource):
         training = controller.getTraining(training_id)
         payload = request.get_json()
 
+        exercise_id = exercise_controller.get_exercise(payload['exercise_id']).id
         date = controller.formatDate(payload['date'])
         comment = payload['comment']
 
+        training.exercise_id = exercise_id
         training.date = date
         training.comment = comment
 
@@ -38,16 +41,20 @@ class TrainingApi(AuthResource):
 class TrainingListApi(AuthResource):
     def get(self):
         trainings = Training.query.filter_by(user_id=current_user.id).all()
+
+        print(trainings)
+        print(trainings[0].exercise_id)
         
         return trainings_schema.dump(trainings)
     
     def post(self):
         payload = request.get_json()
 
+        exercise_id = exercise_controller.get_exercise(payload['exercise_id']).id
         date = controller.formatDate(payload['date'])
         comment = payload['comment']
 
-        new_training = Training(current_user.id, date, comment)
+        new_training = Training(current_user.id, exercise_id, date, comment)
         db.session.add(new_training)
         db.session.commit()
         

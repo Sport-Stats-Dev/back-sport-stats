@@ -3,7 +3,7 @@ from flask_restful import abort
 from apps.model.exercise import Exercise
 from apps.shared import db, current_user
 
-def get_exercise(exercise_id):
+def get_exercise(exercise_id) -> Exercise:
     exercise = Exercise.query.get_or_404(exercise_id)
 
     if exercise.user_id != current_user.id:

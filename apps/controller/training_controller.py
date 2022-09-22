@@ -4,7 +4,7 @@ import datetime
 from apps.model.training import Training
 from apps.shared import current_user
 
-def getTraining(training_id):
+def getTraining(training_id) -> Training:
     training = Training.query.get_or_404(training_id)
 
     if training.user_id != current_user.id:
