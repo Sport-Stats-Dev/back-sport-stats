@@ -4,7 +4,7 @@ import apps.controller.training_controller as training_controller
 
 class Average1rmPerTrainingsApi(AuthResource):
     def get(self, exercise_id):
-        trainings = training_controller.get_trainings_by_exercise_id(exercise_id)
+        trainings = training_controller.get_trainings(exercise_id=exercise_id)
         average_per_training = []
 
         for training in trainings:

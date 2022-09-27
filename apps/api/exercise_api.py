@@ -19,10 +19,7 @@ class ExerciseApi(AuthResource):
         return 'Success', 200
 
     def delete(self, exercise_id):
-        exercise = controller.get_exercise(exercise_id)
-
-        db.session.delete(exercise)
-        db.session.commit()
+        controller.delete_exercise(exercise_id)
 
         return 'Success', 200
 

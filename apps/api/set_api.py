@@ -20,10 +20,7 @@ class SetApi(AuthResource):
         return 'Success', 200
 
     def delete(self, training_id, set_id):
-        set = controller.get_set(training_id, set_id)
-
-        db.session.delete(set)
-        db.session.commit()
+        controller.delete_set(training_id, set_id)
 
         return 'Success', 200
 
