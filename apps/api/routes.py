@@ -12,3 +12,5 @@ class Routes:
 
     EXERCISE_PATH = CURRENT_USER + '/exercises'
     EXERCISE_ID_PATH = EXERCISE_PATH + '/<exercise_id>'
+
+    EXERCISE_AVERAGE_PATH = EXERCISE_ID_PATH + '/1rm-average-per-trainings'
