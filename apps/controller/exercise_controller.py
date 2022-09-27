@@ -2,6 +2,7 @@ from flask_restful import abort
 
 from apps.model.exercise import Exercise
 from apps.shared import db, current_user
+import apps.controller.training_controller as training_controller
 
 def get_exercise(exercise_id) -> Exercise:
     exercise = Exercise.query.get_or_404(exercise_id)
@@ -23,4 +24,13 @@ def set_exercise(payload, exercise_id=None):
         new_set = Exercise(current_user.id, name, description)
         db.session.add(new_set)
     
+    db.session.commit()
+
+def delete_exercise(exercise_id):
+    exercise = get_exercise(exercise_id)
+
+    for training in training_controller.get_trainings(exercise_id=exercise_id):
+        training_controller.delete_training(training.id, commit_database=False)
+
+    db.session.delete(exercise)
     db.session.commit()

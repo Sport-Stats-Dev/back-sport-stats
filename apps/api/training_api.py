@@ -1,3 +1,4 @@
+import json
 from flask_restful import request
 
 from apps.model.training import Training, training_schema, trainings_schema
@@ -31,19 +32,23 @@ class TrainingApi(AuthResource):
         return 'Success', 200
 
     def delete(self, training_id):
-        training = training_controller.get_training(training_id)
-
-        db.session.delete(training)
-        db.session.commit()
+        training_controller.delete_training(training_id)
         
         return 'Success', 200
 
 class TrainingListApi(AuthResource):
     def get(self):
-        trainings = Training.query.filter_by(user_id=current_user.id).all()
+        json_filters = request.args.get('filters', None)
+        filters = {}
+        exercise_id = None
+        
+        if json_filters is not None:
+            filters = json.loads(json_filters)
+            
+        if filters.get('exercise_id', None) is not None:
+            exercise_id = filters['exercise_id']
 
-        print(trainings)
-        print(trainings[0].exercise_id)
+        trainings = training_controller.get_trainings(exercise_id=exercise_id)
         
         return trainings_schema.dump(trainings)
     

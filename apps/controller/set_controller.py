@@ -29,3 +29,11 @@ def set_set(payload, training_id, set_id=None, commit_database=True):
 
     if commit_database:
         db.session.commit()
+
+def delete_set(training_id, set_id, commit_database=True):
+    set = get_set(training_id, set_id)
+
+    db.session.delete(set)
+
+    if commit_database: 
+        db.session.commit()
