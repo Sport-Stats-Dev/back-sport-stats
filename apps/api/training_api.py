@@ -3,23 +3,23 @@ from flask_restful import request
 from apps.model.training import Training, training_schema, trainings_schema
 from apps.shared import db, current_user
 from apps.core.core_resource import AuthResource
-import apps.controller.training_controller as controller
+import apps.controller.training_controller as training_controller
 import apps.controller.set_controller as set_controller
 import apps.controller.exercise_controller as exercise_controller
 
 
 class TrainingApi(AuthResource):
     def get(self, training_id):
-        training = controller.getTraining(training_id)
+        training = training_controller.get_training(training_id)
 
         return training_schema.jsonify(training)
         
     def put(self, training_id):
-        training = controller.getTraining(training_id)
+        training = training_controller.get_training(training_id)
         payload = request.get_json()
 
         exercise_id = exercise_controller.get_exercise(payload['exercise_id']).id
-        date = controller.formatDate(payload['date'])
+        date = training_controller.format_date(payload['date'])
         comment = payload['comment']
 
         training.exercise_id = exercise_id
@@ -31,7 +31,7 @@ class TrainingApi(AuthResource):
         return 'Success', 200
 
     def delete(self, training_id):
-        training = controller.getTraining(training_id)
+        training = training_controller.get_training(training_id)
 
         db.session.delete(training)
         db.session.commit()
@@ -51,7 +51,7 @@ class TrainingListApi(AuthResource):
         payload = request.get_json()
 
         exercise_id = exercise_controller.get_exercise(payload['exercise_id']).id
-        date = controller.formatDate(payload['date'])
+        date = training_controller.format_date(payload['date'])
         comment = payload['comment']
 
         new_training = Training(current_user.id, exercise_id, date, comment)

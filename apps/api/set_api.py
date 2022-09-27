@@ -29,7 +29,7 @@ class SetApi(AuthResource):
 
 class SetListApi(AuthResource):
     def get(self, training_id):
-        training = training_controller.getTraining(training_id)
+        training = training_controller.get_training(training_id)
         
         return sets_schema.dump(training.sets)
 
