@@ -7,7 +7,7 @@ from apps.api.set_api import SetApi, SetListApi
 from apps.api.user_api import LoginApi, RegisterApi
 from apps.api.training_api import TrainingApi, TrainingListApi
 from apps.api.exercise_api import ExerciseApi, ExerciseListApi
-from apps.api.average_api import Average1rmPerTrainingsApi
+from apps.api.average_api import Average1rmPerTrainingsApi, EvolutionOf1rmPerTrainingsApi
 
 class HelloWorldApi(CoreResource):
     def get(self):
@@ -31,4 +31,5 @@ api.add_resource(SetListApi, Routes.SET_PATH)
 api.add_resource(ExerciseApi, Routes.EXERCISE_ID_PATH)
 api.add_resource(ExerciseListApi, Routes.EXERCISE_PATH)
 
-api.add_resource(Average1rmPerTrainingsApi, Routes.EXERCISE_AVERAGE_PATH)
+api.add_resource(Average1rmPerTrainingsApi, Routes.EXERCISE_AVERAGE_1RM_PATH)
+api.add_resource(EvolutionOf1rmPerTrainingsApi, Routes.EXERCISE_EVOL_1RM_PATH)
