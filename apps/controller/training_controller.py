@@ -4,7 +4,6 @@ import datetime
 
 from apps.model.training import Training
 from apps.shared import current_user, db
-import apps.controller.exercise_controller as exercise_controller
 import apps.controller.set_controller as set_controller
 
 def get_training(training_id) -> Training:
