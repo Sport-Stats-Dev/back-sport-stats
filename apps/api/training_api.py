@@ -40,17 +40,29 @@ class TrainingListApi(AuthResource):
     def get(self):
         json_filters = request.args.get('filters', None)
         filters = {}
-        exercise_id = None
         
         if json_filters is not None:
             filters = json.loads(json_filters)
             
-        if filters.get('exercise_id', None) is not None:
-            exercise_id = filters['exercise_id']
+        page = request.args.get('page', None, type=int)
+        per_page = request.args.get('per_page', None, type=int)
 
-        trainings = training_controller.get_trainings(exercise_id=exercise_id)
+        order = filters.get('order', None)
+        exercise_id = filters.get('exercise_id', None)
+
+        trainings, total = training_controller.get_paginated_trainings(
+            exercise_id=exercise_id,
+            page=page,
+            per_page=per_page,
+            order=order
+        )
+
+        response = {
+            'items': trainings_schema.dump(trainings),
+            'total': total
+        }
         
-        return trainings_schema.dump(trainings)
+        return response
     
     def post(self):
         payload = request.get_json()

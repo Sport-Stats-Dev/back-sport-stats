@@ -15,12 +15,29 @@ def get_training(training_id) -> Training:
     return training
 
 def get_trainings(exercise_id=None) -> List[Training]:
-    queries = [Training.user_id==current_user.id]
-        
-    if exercise_id is not None:
-        queries.append(Training.exercise_id==exercise_id)
-
+    queries = _get_queries(exercise_id=exercise_id)
+    
     return Training.query.filter(*queries).all()
+
+def get_paginated_trainings(exercise_id=None, page=None, per_page=None, order=None):
+    queries = _get_queries(exercise_id=exercise_id)
+
+    sort = Training.date.desc()
+    splited_order = None
+    sort_field = None
+
+    if order is not None:
+        splited_order = order.split('_')
+        sort_field = getattr(Training, splited_order[0], None)
+        if sort_field is not None:
+            if splited_order[1] == 'desc':
+                sort = sort_field.desc()
+            elif splited_order[1] == 'asc':
+                sort = sort_field.asc()
+
+    result = Training.query.filter(*queries).order_by(sort).paginate(page=page, per_page=per_page).items
+    total = Training.query.filter(*queries).count()
+    return result, total
 
 def delete_training(training_id, commit_database=True):
     training = get_training(training_id)
@@ -35,3 +52,11 @@ def delete_training(training_id, commit_database=True):
 
 def format_date(date):
     return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+
+def _get_queries(exercise_id=None):
+    queries = [Training.user_id==current_user.id]
+        
+    if exercise_id is not None:
+        queries.append(Training.exercise_id==exercise_id)
+
+    return queries
