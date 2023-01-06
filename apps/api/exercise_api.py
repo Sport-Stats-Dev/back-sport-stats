@@ -1,9 +1,9 @@
+import json
 from flask_restful import request
 
-from apps.shared import current_user
 from apps.core.core_resource import AuthResource
 import apps.controller.exercise_controller as exercise_controller
-from apps.model.exercise import Exercise, exercise_schema, exercises_schema
+from apps.model.exercise import exercise_schema, exercises_schema
 
 
 class ExerciseApi(AuthResource):
@@ -25,9 +25,29 @@ class ExerciseApi(AuthResource):
 
 class ExerciseListApi(AuthResource):
     def get(self):
-        exercises = Exercise.query.filter_by(user_id=current_user.id).all()
+        json_filters = request.args.get('filters', None)
+        filters = {}
         
-        return exercises_schema.dump(exercises)
+        if json_filters is not None:
+            filters = json.loads(json_filters)
+            
+        page = request.args.get('page', None, type=int)
+        per_page = request.args.get('per_page', None, type=int)
+
+        order = filters.get('order', None)
+
+        trainings, total = exercise_controller.get_paginated_exercises(
+            page=page,
+            per_page=per_page,
+            order=order
+        )
+
+        response = {
+            'items': exercises_schema.dump(trainings),
+            'total': total
+        }
+        
+        return response
 
     def post(self):
         payload = request.get_json()

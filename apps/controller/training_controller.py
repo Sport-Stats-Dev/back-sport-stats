@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from flask_restful import abort
 import datetime
 
@@ -19,7 +19,7 @@ def get_trainings(exercise_id=None) -> List[Training]:
     
     return Training.query.filter(*queries).all()
 
-def get_paginated_trainings(exercise_id=None, page=None, per_page=None, order=None):
+def get_paginated_trainings(exercise_id=None, page=None, per_page=None, order=None) -> Tuple[List[Training], int]:
     queries = _get_queries(exercise_id=exercise_id)
 
     sort = Training.date.desc()
