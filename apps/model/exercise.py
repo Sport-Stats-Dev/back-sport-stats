@@ -24,6 +24,11 @@ class Exercise(db.Model):
         db.String(2000)
     )
 
+    training_count = db.Column(
+        db.Integer,
+        default=0
+    )
+
     def __init__(self, user_id, name, description):
         self.user_id = user_id
         self.name = name
@@ -32,7 +37,7 @@ class Exercise(db.Model):
 class ExerciseSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Exercise
-        ordered = True 
+        ordered = True
 
 # Init schema
 exercise_schema = ExerciseSchema()
