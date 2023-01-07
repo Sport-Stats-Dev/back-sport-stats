@@ -36,7 +36,7 @@ class Training(db.Model):
 
     sets = db.relationship(
         "Set",
-        order_by="Set.id",
+        order_by="Set.order",
         lazy="dynamic"
     )
 
