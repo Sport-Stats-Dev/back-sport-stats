@@ -1,13 +1,32 @@
+from datetime import datetime, timedelta
+import uuid
+
 from apps.shared import db, ma
 from apps.model.training import TrainingSchema
 
 
 class User(db.Model):
     __tablename__ = 'user'
-    
+
     id = db.Column(
-        db.Integer,
-        primary_key=True
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4())
+    )
+
+    create_date = db.Column(
+        db.DateTime(timezone=True),
+        default=datetime.utcnow
+    )
+
+    last_connexion = db.Column(
+        db.DateTime(timezone=True),
+        nullable=True
+    )
+
+    expiration_date = db.Column(
+        db.DateTime(timezone=True),
+        default=datetime.utcnow()+timedelta(days=31)
     )
 
     email = db.Column(

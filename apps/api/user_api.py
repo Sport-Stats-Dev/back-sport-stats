@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import jsonify, current_app, make_response, g
 from flask_restful import Resource, request, abort
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -20,7 +21,10 @@ class RegisterApi(Resource):
         if User.query.filter_by(email=email).first() is not None:
             abort(409) # existing user
 
-        new_user = User(email, hashed_password)
+        new_user = User(
+            email=email,
+            password=hashed_password
+        )
         db.session.add(new_user)
         db.session.commit()
         
@@ -43,6 +47,9 @@ class LoginApi(Resource):
 
         if not check_password_hash(user.password, payload['password']):
             abort(401) # passwords doesn't match
+
+        user.last_connexion = datetime.utcnow()
+        db.session.commit()
 
         payload = {'user_id': user.id}
         token = refresh_access_token(payload)

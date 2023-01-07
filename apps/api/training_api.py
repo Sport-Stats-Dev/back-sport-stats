@@ -67,12 +67,15 @@ class TrainingListApi(AuthResource):
     def post(self):
         payload = request.get_json()
 
-        exercise_id = exercise_controller.get_exercise(payload['exercise_id']).id
+        exercise = exercise_controller.get_exercise(payload['exercise_id'])
+
+        exercise_id = exercise.id
         date = training_controller.format_date(payload['date'])
         comment = payload['comment']
 
         new_training = Training(current_user.id, exercise_id, date, comment)
         db.session.add(new_training)
+        exercise.training_count += 1
         db.session.commit()
         
         if payload['sets']:

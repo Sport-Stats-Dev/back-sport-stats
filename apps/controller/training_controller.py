@@ -5,6 +5,7 @@ import datetime
 from apps.model.training import Training
 from apps.shared import current_user, db
 import apps.controller.set_controller as set_controller
+import apps.controller.exercise_controller as exercise_controller
 
 def get_training(training_id) -> Training:
     training = Training.query.get_or_404(training_id)
@@ -27,7 +28,7 @@ def get_paginated_trainings(exercise_id=None, page=None, per_page=None, order=No
     sort_field = None
 
     if order is not None:
-        splited_order = order.split('_')
+        splited_order = order.split('.')
         sort_field = getattr(Training, splited_order[0], None)
         if sort_field is not None:
             if splited_order[1] == 'desc':
@@ -41,10 +42,12 @@ def get_paginated_trainings(exercise_id=None, page=None, per_page=None, order=No
 
 def delete_training(training_id, commit_database=True):
     training = get_training(training_id)
+    exercise = exercise_controller.get_exercise(training.exercise_id)
 
     for set in training.sets:
         set_controller.delete_set(training_id, set.id, commit_database=False)
 
+    exercise.training_count -= 1
     db.session.delete(training)
 
     if commit_database: 

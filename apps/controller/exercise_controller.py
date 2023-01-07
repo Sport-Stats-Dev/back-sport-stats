@@ -21,7 +21,7 @@ def get_paginated_exercises(page=None, per_page=None, order=None) -> Tuple[List[
     sort_field = None
 
     if order is not None:
-        splited_order = order.split('_')
+        splited_order = order.split('.')
         sort_field = getattr(Exercise, splited_order[0], None)
         if sort_field is not None:
             if splited_order[1] == 'desc':
@@ -42,8 +42,8 @@ def set_exercise(payload, exercise_id=None):
         exercise.name = name
         exercise.description = description
     else:
-        new_set = Exercise(current_user.id, name, description)
-        db.session.add(new_set)
+        new_exercise = Exercise(current_user.id, name, description)
+        db.session.add(new_exercise)
     
     db.session.commit()
 

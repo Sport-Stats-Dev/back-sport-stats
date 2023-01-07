@@ -1,3 +1,4 @@
+import uuid
 from apps.shared import db, ma
 
 
@@ -5,8 +6,9 @@ class Exercise(db.Model):
     __tablename__ = 'exercise'
 
     id = db.Column(
-        db.Integer,
-        primary_key=True
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4())
     )
     
     user_id = db.Column(
@@ -24,6 +26,11 @@ class Exercise(db.Model):
         db.String(2000)
     )
 
+    training_count = db.Column(
+        db.Integer,
+        default=0
+    )
+
     def __init__(self, user_id, name, description):
         self.user_id = user_id
         self.name = name
@@ -32,7 +39,7 @@ class Exercise(db.Model):
 class ExerciseSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Exercise
-        ordered = True 
+        ordered = True
 
 # Init schema
 exercise_schema = ExerciseSchema()
