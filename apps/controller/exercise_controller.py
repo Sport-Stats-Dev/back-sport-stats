@@ -42,8 +42,8 @@ def set_exercise(payload, exercise_id=None):
         exercise.name = name
         exercise.description = description
     else:
-        new_set = Exercise(current_user.id, name, description)
-        db.session.add(new_set)
+        new_exercise = Exercise(current_user.id, name, description)
+        db.session.add(new_exercise)
     
     db.session.commit()
 

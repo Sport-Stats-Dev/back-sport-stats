@@ -1,3 +1,4 @@
+import uuid
 from apps.shared import db, ma
 
 
@@ -5,8 +6,9 @@ class Set(db.Model):
     __tablename__ = 'set'
 
     id = db.Column(
-        db.Integer,
-        primary_key=True
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4())
     )
     
     training_id = db.Column(

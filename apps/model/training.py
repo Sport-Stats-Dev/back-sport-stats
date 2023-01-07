@@ -1,3 +1,4 @@
+import uuid
 from apps.model.exercise import ExerciseSchema
 from apps.model.set import SetSchema
 from apps.shared import db, ma
@@ -7,8 +8,9 @@ class Training(db.Model):
     __tablename__ = 'training'
 
     id = db.Column(
-        db.Integer,
-        primary_key=True
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4())
     )
     
     user_id = db.Column(
