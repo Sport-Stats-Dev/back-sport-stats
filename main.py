@@ -1,10 +1,8 @@
 import datetime
 from flask import Flask, g
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 import os
 from apps.core.tools import add_token_to_response, refresh_access_token
-import apps.shared as shared
+from apps import shared
 
 
 # Init app
@@ -19,13 +17,14 @@ app.config['SECRET_KEY'] = 'thisissecret'
 app.config['TOKEN_VALIDITY'] = datetime.timedelta(minutes=30)
 
 # Inits
-shared.db = SQLAlchemy(app)
-shared.ma = Marshmallow(app)
+shared.init_app(app)
+
+from apps import model
+shared.db.create_all()
 
 # Load blueprints
 from apps.api import api_blueprint
 app.register_blueprint(api_blueprint)
-
 
 @app.after_request
 def generate_new_token(response):
@@ -44,12 +43,6 @@ def cors(response):
     response.headers.add("Access-Control-Allow-Credentials", "true")
     response.headers.add("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE")
     return response
-
-from apps.model.user import *
-from apps.model.training import *
-from apps.model.set import *
-from apps.model.exercise import *
-shared.db.create_all()
 
 # Run Server
 if __name__ == '__main__':
