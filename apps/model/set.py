@@ -38,6 +38,9 @@ class Set(db.Model):
         self.reps = reps
         self.weight = weight
 
+    def get_one_rm(self):
+        return (self.weight * self.reps / 30) + self.weight
+
 class SetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Set

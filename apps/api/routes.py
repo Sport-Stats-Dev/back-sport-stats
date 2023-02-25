@@ -12,6 +12,9 @@ class Routes:
 
     EXERCISE_PATH = CURRENT_USER + '/exercises'
     EXERCISE_ID_PATH = EXERCISE_PATH + '/<exercise_id>'
+    EXERCISE_ID_DETAILS_PATH = EXERCISE_ID_PATH + '/details'
 
-    EXERCISE_AVERAGE_1RM_PATH = EXERCISE_ID_PATH + '/1rm-average-per-trainings'
-    EXERCISE_EVOL_1RM_PATH = EXERCISE_ID_PATH + '/evolution-of-1rm-per-trainings'
+    ONE_RMS_PATH = EXERCISE_ID_PATH + '/one-rms'
+    ONE_RMS_EVOL_PATH = EXERCISE_ID_PATH + '/one-rms-evol'
+    VOLUMES_PATH = EXERCISE_ID_PATH + '/volumes'
+    VOLUMES_EVOL_PATH = EXERCISE_ID_PATH + '/volumes-evol'

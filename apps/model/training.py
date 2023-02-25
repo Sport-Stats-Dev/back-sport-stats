@@ -51,6 +51,12 @@ class Training(db.Model):
         self.date = date
         self.comment = comment
 
+    def get_one_rm_average(self):
+        return sum([s.get_one_rm() for s in self.sets]) / self.sets.count()
+    
+    def get_volume(self):
+        return sum([s.weight * s.reps for s in self.sets])
+
 class TrainingSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Training
