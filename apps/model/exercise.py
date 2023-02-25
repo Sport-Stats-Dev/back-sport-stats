@@ -43,4 +43,4 @@ class ExerciseSchema(ma.SQLAlchemyAutoSchema):
 
 # Init schema
 exercise_schema = ExerciseSchema()
-exercises_schema = ExerciseSchema(many=True)
+exercises_schema = ExerciseSchema(many=True, exclude=('description',))

@@ -15,9 +15,22 @@ def get_training(training_id) -> Training:
 
     return training
 
+def get_last_training(exercise_id=None) -> Training:
+    queries = _get_queries(exercise_id=exercise_id)
+    return Training.query.filter(*queries).order_by(Training.date.desc()).first()
+
+def get_best_one_rm_training(exercise_id=None) -> Training:
+    queries = _get_queries(exercise_id=exercise_id)
+    trainings = Training.query.filter(*queries).order_by().all()
+    return max(trainings, key=lambda t: t.get_one_rm_average()) if trainings else None
+
+def get_best_volume_training(exercise_id=None) -> Training:
+    queries = _get_queries(exercise_id=exercise_id)
+    trainings = Training.query.filter(*queries).order_by().all()
+    return max(trainings, key=lambda t: t.get_volume()) if trainings else None
+
 def get_trainings(exercise_id=None) -> List[Training]:
     queries = _get_queries(exercise_id=exercise_id)
-    
     return Training.query.filter(*queries).all()
 
 def get_paginated_trainings(exercise_id=None, page=None, per_page=None, order=None) -> Tuple[List[Training], int]:
@@ -60,6 +73,7 @@ def _get_queries(exercise_id=None):
     queries = [Training.user_id==current_user.id]
         
     if exercise_id is not None:
+        exercise_controller.get_exercise(exercise_id)
         queries.append(Training.exercise_id==exercise_id)
 
     return queries
