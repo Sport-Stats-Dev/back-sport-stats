@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  app:
+    environment:
+      - FLASK_APP=app/main.py
+      - FLASK_ENV=${FLASK_ENV}
+      - FLASK_RUN_HOST=${FLASK_RUN_HOST}
+      - FLASK_RUN_PORT=${FLASK_RUN_PORT}
+    build:
+      context: .
+      dockerfile: back-dockerfile
+      network: host
+    command: flask run --host=0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    networks:
+      - "sport_stats_network"
+    depends_on:
+      - db_postgres
+  
+  db_postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_db_vol:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - "sport_stats_network"
+
+volumes:
+  postgres_db_vol:
+
+networks:
+  sport_stats_network:

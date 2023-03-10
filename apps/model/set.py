@@ -12,7 +12,7 @@ class Set(db.Model):
     )
     
     training_id = db.Column(
-        db.Integer,
+        db.String(36),
         db.ForeignKey("training.id"),
         nullable=False
     )
