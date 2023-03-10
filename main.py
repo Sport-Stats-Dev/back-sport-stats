@@ -1,20 +1,22 @@
 import datetime
 from flask import Flask, g
-import os
 from apps.core.tools import add_token_to_response, refresh_access_token
 from apps import shared
+from dotenv import load_dotenv
+import os
 
 
 # Init app
 app = Flask(__name__)
-basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Config
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+load_dotenv()
+app.config["SQLALCHEMY_DATABASE_URI"] = \
+    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@db_postgres/{os.getenv('POSTGRES_DB')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_SORT_KEYS'] = False
-app.config['SECRET_KEY'] = 'thisissecret'
-app.config['TOKEN_VALIDITY'] = datetime.timedelta(minutes=30)
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(seconds=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES")))
 
 # Inits
 shared.init_app(app)
@@ -44,6 +46,6 @@ def cors(response):
     response.headers.add("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE")
     return response
 
-# Run Server
-if __name__ == '__main__':
-    app.run(debug=True)
+# Run Server (if not using flask run)
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=5000)

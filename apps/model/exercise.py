@@ -12,7 +12,7 @@ class Exercise(db.Model):
     )
     
     user_id = db.Column(
-        db.Integer,
+        db.String(36),
         db.ForeignKey("user.id"),
         nullable=False
     )

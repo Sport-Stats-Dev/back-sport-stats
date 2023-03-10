@@ -14,13 +14,13 @@ class Training(db.Model):
     )
     
     user_id = db.Column(
-        db.Integer,
+        db.String(36),
         db.ForeignKey("user.id"),
         nullable=False
     )
     
     exercise_id = db.Column(
-        db.Integer,
+        db.String(36),
         db.ForeignKey("exercise.id"),
         nullable=False
     )
