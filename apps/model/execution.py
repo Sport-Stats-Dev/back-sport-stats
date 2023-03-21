@@ -4,8 +4,8 @@ from apps.model.set import SetSchema
 from apps.shared import db, ma
 
 
-class Training(db.Model):
-    __tablename__ = 'training'
+class Execution(db.Model):
+    __tablename__ = 'execution'
 
     id = db.Column(
         db.String(36),
@@ -13,9 +13,9 @@ class Training(db.Model):
         default=lambda: str(uuid.uuid4())
     )
     
-    user_id = db.Column(
+    workout_id = db.Column(
         db.String(36),
-        db.ForeignKey("user.id"),
+        db.ForeignKey("workout.id"),
         nullable=False
     )
     
@@ -25,19 +25,20 @@ class Training(db.Model):
         nullable=False
     )
 
-    date = db.Column(
-        db.DateTime,
+    order = db.Column(
+        db.Integer,
         nullable=False
     )
 
-    comment = db.Column(
+    notes = db.Column(
         db.String(2000)
     )
 
     sets = db.relationship(
         "Set",
         order_by="Set.order",
-        lazy="dynamic"
+        lazy="dynamic",
+        cascade='all, delete-orphan'
     )
 
     exercise = db.relationship(
@@ -45,11 +46,10 @@ class Training(db.Model):
         order_by="Exercise.id"
     )
 
-    def __init__(self, user_id, exercise_id, date, comment):
-        self.user_id = user_id
+    def __init__(self, exercise_id, order, notes):
         self.exercise_id = exercise_id
-        self.date = date
-        self.comment = comment
+        self.order = order
+        self.notes = notes
 
     def get_one_rm_average(self):
         return sum([s.get_one_rm() for s in self.sets]) / self.sets.count()
@@ -57,14 +57,13 @@ class Training(db.Model):
     def get_volume(self):
         return sum([s.weight * s.reps for s in self.sets])
 
-class TrainingSchema(ma.SQLAlchemyAutoSchema):
+class ExecutionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = Training
+        model = Execution
         ordered = True
     
     sets = ma.Nested(SetSchema, many=True)
-    exercise = ma.Nested(ExerciseSchema)
 
 # Init schema
-training_schema = TrainingSchema()
-trainings_schema = TrainingSchema(many=True)
+execution_schema = ExecutionSchema()
+executions_schema = ExecutionSchema(many=True)

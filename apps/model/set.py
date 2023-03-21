@@ -11,18 +11,13 @@ class Set(db.Model):
         default=lambda: str(uuid.uuid4())
     )
     
-    training_id = db.Column(
+    execution_id = db.Column(
         db.String(36),
-        db.ForeignKey("training.id"),
+        db.ForeignKey("execution.id"),
         nullable=False
     )
 
     order = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    reps = db.Column(
         db.Integer,
         nullable=False
     )
@@ -32,11 +27,15 @@ class Set(db.Model):
         nullable=False
     )
 
-    def __init__(self, training_id, order, reps, weight):
-        self.training_id = training_id
+    reps = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    def __init__(self, order, weight, reps):
         self.order = order
-        self.reps = reps
         self.weight = weight
+        self.reps = reps
 
     def get_one_rm(self):
         return (self.weight * self.reps / 30) + self.weight
