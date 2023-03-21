@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import uuid
 
 from apps.shared import db, ma
-from apps.model.training import TrainingSchema
+import apps.model.workout
 
 
 class User(db.Model):
@@ -40,9 +40,11 @@ class User(db.Model):
         nullable=False
     )
 
-    trainings = db.relationship(
-        "Training",
-        order_by="Training.id"
+    workouts = db.relationship(
+        "Workout",
+        backref="user",
+        lazy="dynamic",
+        cascade='all, delete-orphan'
     )
 
     def __init__(self, email, password):
@@ -54,16 +56,6 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         ordered = True
 
-class FullUserSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = User
-        ordered = True
-    
-    trainings = ma.Nested(TrainingSchema, many=True) 
-
 # Init schema
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
-
-full_user_schema = FullUserSchema()
-full_users_schema = FullUserSchema(many=True)
