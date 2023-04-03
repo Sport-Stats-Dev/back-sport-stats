@@ -36,11 +36,13 @@ class ExerciseListApi(AuthResource):
         per_page = request.args.get("per_page", None, type=int)
 
         order = filters.get("order", None)
+        name = filters.get("name", None)
 
         exercises, total = exercise_controller.get_paginated_exercises(
             page=page,
             per_page=per_page,
-            order=order
+            order=order,
+            name=name
         )
 
         response = {

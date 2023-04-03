@@ -63,6 +63,7 @@ class ExecutionSchema(ma.SQLAlchemyAutoSchema):
         ordered = True
     
     sets = ma.Nested(SetSchema, many=True)
+    exercise = ma.Nested(ExerciseSchema)
 
 # Init schema
 execution_schema = ExecutionSchema()
