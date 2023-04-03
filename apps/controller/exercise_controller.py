@@ -16,7 +16,7 @@ def get_exercise(exercise_id) -> Exercise:
     return exercise
 
 
-def get_paginated_exercises(page=None, per_page=None, order=None) -> Tuple[List[Exercise], int]:
+def get_paginated_exercises(page=None, per_page=None, order=None, name=None) -> Tuple[List[Exercise], int]:
     queries = [Exercise.user_id == current_user.id]
 
     table = Exercise.query
@@ -36,6 +36,9 @@ def get_paginated_exercises(page=None, per_page=None, order=None) -> Tuple[List[
                 sort = sort_field.desc()
             elif splited_order[1] == "asc":
                 sort = sort_field.asc()
+    
+    if name is not None:
+        queries.append(Exercise.name.ilike(f"%{name}%"))
 
     result = table.filter(*queries).order_by(sort).paginate(page=page, per_page=per_page).items
     total = Exercise.query.filter(*queries).count()
