@@ -13,7 +13,7 @@ def get_workout(workout_id) -> Workout:
     workout = Workout.query.get_or_404(workout_id)
 
     if workout.user_id != current_user.id:
-        abort(403) # not user's workout
+        abort(403)  # not user's workout
 
     return workout
 
@@ -111,7 +111,7 @@ def set_workout(payload):
                 weight=s["weight"],
                 reps=s["reps"]
             ))
-    
+
     db.session.add(workout)
     db.session.commit()
 
@@ -126,19 +126,30 @@ def delete_execution(execution_id):
     db.session.commit()
 
 
-def get_executions_by_exercise(exercise_id):
-    return Execution.query.join(Workout).filter(Workout.user_id==current_user.id, Execution.exercise_id==exercise_id).all()
+def get_executions_by_exercise(exercise_id, periodStart=None, periodEnd=None):
+    periodFilters = []
+    if periodStart is not None:
+        periodFilters.append(Workout.date >= datetime.fromtimestamp(periodStart))
+    if periodEnd is not None:
+        periodFilters.append(Workout.date <= datetime.fromtimestamp(periodEnd))
+
+    return Execution.query.join(Workout).filter(
+        Workout.user_id == current_user.id,
+        Execution.exercise_id == exercise_id,
+        *periodFilters
+    ).all()
 
 
 def get_executions_count_by_exercise(exercise_id):
-    return Execution.query.join(Workout).filter(Workout.user_id==current_user.id, Execution.exercise_id==exercise_id).count()
+    return Execution.query.join(Workout).filter(Workout.user_id == current_user.id, Execution.exercise_id == exercise_id).count()
 
 
 def _get_queries(exercise_id=None):
-    queries = [Workout.user_id==current_user.id]
-        
+    queries = [Workout.user_id == current_user.id]
+
     if exercise_id is not None:
         exercise_controller.get_exercise(exercise_id)
-        queries.append(Workout.executions.any(Execution.exercise_id==exercise_id))
+        queries.append(Workout.executions.any(
+            Execution.exercise_id == exercise_id))
 
     return queries

@@ -7,7 +7,7 @@ from apps.api.routes import Routes
 from apps.api.user_api import LoginApi, RegisterApi
 from apps.api.workout_api import WorkoutApi, WorkoutListApi
 from apps.api.exercise_api import ExerciseApi, ExerciseDetailsApi, ExerciseLastExecutionApi, ExerciseListApi
-from apps.api.stats_api import OneRmsApi, OneRmsEvolApi, VolumesApi, VolumesEvolApi
+from apps.api.stats_api import OneRmsApi, OneRmsEvolApi, VolumesApi, VolumesEvolApi, MaxWeightApi
 
 class HelloWorldApi(CoreResource):
     def get(self):
@@ -36,3 +36,4 @@ api.add_resource(OneRmsApi, Routes.ONE_RMS_PATH)
 api.add_resource(OneRmsEvolApi, Routes.ONE_RMS_EVOL_PATH)
 api.add_resource(VolumesApi, Routes.VOLUMES_PATH)
 api.add_resource(VolumesEvolApi, Routes.VOLUMES_EVOL_PATH)
+api.add_resource(MaxWeightApi, Routes.MAX_WEIGHT_PATH)

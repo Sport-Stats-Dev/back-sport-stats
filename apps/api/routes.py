@@ -18,3 +18,4 @@ class Routes:
     ONE_RMS_EVOL_PATH = EXERCISE_ID_PATH + '/one-rms-evol'
     VOLUMES_PATH = EXERCISE_ID_PATH + '/volumes'
     VOLUMES_EVOL_PATH = EXERCISE_ID_PATH + '/volumes-evol'
+    MAX_WEIGHT_PATH = EXERCISE_ID_PATH + '/max-weight'

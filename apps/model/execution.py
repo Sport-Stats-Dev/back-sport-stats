@@ -56,6 +56,9 @@ class Execution(db.Model):
     
     def get_volume(self):
         return sum([s.weight * s.reps for s in self.sets])
+    
+    def get_max_weight(self):
+        return max([s.weight for s in self.sets])
 
 class ExecutionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
