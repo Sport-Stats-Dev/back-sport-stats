@@ -79,7 +79,6 @@ class ExerciseDetailsApi(AuthResource):
             details["best_one_rm_id"] = best_one_rm.id
             details["best_volume"] = best_volume.get_volume()
             details["best_volume_id"] = best_volume.id
-            details["test"] = execution_schema.dump(best_one_rm)
 
         return { "exercise": exercise_schema.dump(exercise), "details": details }
 

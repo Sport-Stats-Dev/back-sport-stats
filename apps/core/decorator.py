@@ -26,8 +26,14 @@ def auth_requiered(func):
 def auth_user(required: bool):
     token = None
 
+    if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            token = auth_header.split(' ')[1] if len(auth_header.split(' ')) > 1 else None
+
     if 'token' in request.cookies:
         token = request.cookies['token']
+    
+    if token is not None:
         access_token = decode_token(token, not required)
 
         if access_token is not None:
