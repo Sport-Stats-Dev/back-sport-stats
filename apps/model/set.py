@@ -32,10 +32,16 @@ class Set(db.Model):
         nullable=False
     )
 
-    def __init__(self, order, weight, reps):
+    type = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    def __init__(self, order, weight, reps, type):
         self.order = order
         self.weight = weight
         self.reps = reps
+        self.type = type
 
     def get_one_rm(self):
         return (self.weight * self.reps / 30) + self.weight

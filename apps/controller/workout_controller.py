@@ -109,7 +109,8 @@ def set_workout(payload):
             execution.sets.append(Set(
                 order=s["order"],
                 weight=s["weight"],
-                reps=s["reps"]
+                reps=s["reps"],
+                type=s["type"]
             ))
 
     db.session.add(workout)

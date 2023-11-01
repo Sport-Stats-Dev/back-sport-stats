@@ -52,7 +52,7 @@ class Execution(db.Model):
         self.notes = notes
 
     def get_one_rm_average(self):
-        return sum([s.get_one_rm() for s in self.sets]) / self.sets.count()
+        return sum([s.get_one_rm() for s in self.sets if s.type == 0]) / len([s for s in self.sets if s.type == 0])
     
     def get_volume(self):
         return sum([s.weight * s.reps for s in self.sets])
@@ -66,7 +66,7 @@ class ExecutionSchema(ma.SQLAlchemyAutoSchema):
         ordered = True
     
     sets = ma.Nested(SetSchema, many=True)
-    exercise = ma.Nested(ExerciseSchema)
+    exercise_id = ma.auto_field()
 
 # Init schema
 execution_schema = ExecutionSchema()
