@@ -26,34 +26,37 @@ class ExerciseApi(AuthResource):
 
 class ExerciseListApi(AuthResource):
     def get(self):
-        json_filters = request.args.get("filters", None)
-        filters = {}
+        # json_filters = request.args.get("filters", None)
+        # filters = {}
         
-        if json_filters is not None:
-            filters = json.loads(json_filters)
+        # if json_filters is not None:
+        #     filters = json.loads(json_filters)
             
-        page = request.args.get("page", None, type=int)
-        per_page = request.args.get("per_page", None, type=int)
+        # page = request.args.get("page", None, type=int)
+        # per_page = request.args.get("per_page", None, type=int)
 
-        order = filters.get("order", None)
-        name = filters.get("name", None)
+        # order = filters.get("order", None)
+        # name = filters.get("name", None)
 
-        exercises, total = exercise_controller.get_paginated_exercises(
-            page=page,
-            per_page=per_page,
-            order=order,
-            name=name
-        )
+        # exercises, total = exercise_controller.get_paginated_exercises(
+        #     page=page,
+        #     per_page=per_page,
+        #     order=order,
+        #     name=name
+        # )
 
-        response = {
-            "items": exercises_schema.dump(exercises),
-            "total": total
-        }
+        # response = {
+        #     "items": exercises_schema.dump(exercises),
+        #     "total": total
+        # }
 
-        for exercise in response["items"]:
-            exercise["execution_count"] = workout_controller.get_executions_count_by_exercise(exercise_id=exercise["id"])
+        # for exercise in response["items"]:
+        #     exercise["execution_count"] = workout_controller.get_executions_count_by_exercise(exercise_id=exercise["id"])
         
-        return response
+        exercices = exercise_controller.get_all_exercises()
+        result = exercises_schema.dump(exercices)
+
+        return result
 
     def post(self):
         payload = request.get_json()

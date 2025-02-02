@@ -22,7 +22,7 @@ services:
       - db_postgres
   
   db_postgres:
-    image: postgres
+    image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

@@ -2,7 +2,7 @@ from typing import List, Tuple
 from flask_restful import abort
 from apps.model.execution import Execution
 
-from apps.model.exercise import Exercise
+from apps.model.exercise import Exercise, SharedExercise, UserExercise
 from apps.shared import db, current_user
 import apps.controller.workout_controller as workout_controller
 
@@ -10,14 +10,14 @@ import apps.controller.workout_controller as workout_controller
 def get_exercise(exercise_id) -> Exercise:
     exercise = Exercise.query.get_or_404(exercise_id)
 
-    if exercise.user_id != current_user.id:
+    if isinstance(exercise, UserExercise) and exercise.user_id != current_user.id:
         abort(403)  # not user's exercise
 
     return exercise
 
 
-def get_paginated_exercises(page=None, per_page=None, order=None, name=None) -> Tuple[List[Exercise], int]:
-    queries = [Exercise.user_id == current_user.id]
+def get_paginated_exercises(page=None, per_page=None, order=None, name=None, locale=None) -> Tuple[List[Exercise], int]:
+    queries = [UserExercise.__table__.c.id == Exercise.id and UserExercise.user_id == current_user.id]
 
     table = Exercise.query
     sort = Exercise.name.asc()
@@ -44,6 +44,12 @@ def get_paginated_exercises(page=None, per_page=None, order=None, name=None) -> 
     total = Exercise.query.filter(*queries).count()
     return result, total
 
+def get_all_exercises() -> List[Exercise]:
+    user_exercises = UserExercise.query.filter_by(user_id=current_user.id).all()
+    shared_exercises = SharedExercise.query.all()
+    
+    return user_exercises + shared_exercises
+
 
 def set_exercise(payload, exercise_id=None):
     name = payload["name"]
@@ -51,10 +57,18 @@ def set_exercise(payload, exercise_id=None):
 
     if exercise_id is not None:
         exercise = get_exercise(exercise_id)
+
+        if isinstance(exercise, SharedExercise):
+            abort(403)
+
         exercise.name = name
         exercise.description = description
     else:
-        new_exercise = Exercise(current_user.id, name, description)
+        new_exercise = UserExercise(
+            name=name,
+            description=description,
+            user_id=current_user.id
+        )
         db.session.add(new_exercise)
 
     db.session.commit()
@@ -62,6 +76,9 @@ def set_exercise(payload, exercise_id=None):
 
 def delete_exercise(exercise_id):
     exercise = get_exercise(exercise_id)
+
+    if isinstance(exercise, SharedExercise):
+        abort(403)
 
     for executions in workout_controller.get_executions_by_exercise(exercise_id=exercise_id):
         workout = executions.workout
