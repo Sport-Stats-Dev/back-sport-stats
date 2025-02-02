@@ -14,6 +14,7 @@ def auth(func):
 
     return decorated
 
+
 def auth_requiered(func):
     @wraps(func)
     def decorated(*args, **kwargs):
@@ -23,16 +24,17 @@ def auth_requiered(func):
 
     return decorated
 
+
 def auth_user(required: bool):
     token = None
 
     if 'Authorization' in request.headers:
-            auth_header = request.headers['Authorization']
-            token = auth_header.split(' ')[1] if len(auth_header.split(' ')) > 1 else None
+        auth_header = request.headers['Authorization']
+        token = auth_header.split(' ')[1] if len(auth_header.split(' ')) > 1 else None
 
     if 'token' in request.cookies:
         token = request.cookies['token']
-    
+
     if token is not None:
         access_token = decode_token(token, not required)
 
@@ -41,10 +43,10 @@ def auth_user(required: bool):
             user = User.query.filter_by(id=access_token['user_id']).first()
 
             if user is None and required:
-                abort(401) # user doesn't exist
+                abort(401)  # user doesn't exist
 
             if user is not None:
                 g._current_user = user
 
     elif required:
-        abort(401) # token is missing
+        abort(401)  # token is missing

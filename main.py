@@ -1,6 +1,5 @@
 import datetime
-from flask import Flask, g
-from apps.core.tools import add_token_to_response, refresh_access_token
+from flask import Flask
 from apps import shared
 from dotenv import load_dotenv
 import os
@@ -17,26 +16,18 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_SORT_KEYS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(seconds=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES")))
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(seconds=int(os.getenv("JWT_REFRESH_TOKEN_EXPIRES")))
 
 # Inits
 shared.init_app(app)
 
-from apps import model
+from apps import model  # important
 shared.db.create_all()
 
 # Load blueprints
 from apps.api import api_blueprint
 app.register_blueprint(api_blueprint)
 
-@app.after_request
-def generate_new_token(response):
-    access_token = getattr(g, 'access_token', None)
-
-    if access_token is not None:
-        new_token = refresh_access_token(access_token)
-        add_token_to_response(response, new_token)
-
-    return response
 
 @app.after_request
 def cors(response):

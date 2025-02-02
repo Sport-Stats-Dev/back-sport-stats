@@ -11,8 +11,8 @@ class ExecutionApi(AuthResource):
         execution = workout_controller.get_execution(execution_id=execution_id)
 
         if execution is None:
-            abort(404) # not found
-        
+            abort(404)  # not found
+
         response = execution_schema.dump(execution)
         response["date"] = str(execution.workout.date)
 

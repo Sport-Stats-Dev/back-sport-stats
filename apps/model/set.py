@@ -10,7 +10,7 @@ class Set(db.Model):
         primary_key=True,
         default=lambda: str(uuid.uuid4())
     )
-    
+
     execution_id = db.Column(
         db.String(36),
         db.ForeignKey("execution.id"),
@@ -37,19 +37,31 @@ class Set(db.Model):
         nullable=False
     )
 
-    def __init__(self, order, weight, reps, type):
+    recovery = db.Column(
+        db.Integer,
+        nullable=False,
+        server_default='0'
+    )
+
+    def __init__(self, order, weight, reps, type, recovery):
         self.order = order
         self.weight = weight
         self.reps = reps
         self.type = type
+        self.recovery = recovery
 
     def get_one_rm(self):
         return (self.weight * self.reps / 30) + self.weight
+
+    def get_volume(self):
+        return self.weight * self.reps
+
 
 class SetSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Set
         ordered = True
+
 
 # Init schema
 set_schema = SetSchema()

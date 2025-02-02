@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import uuid
 
 from apps.shared import db, ma
-import apps.model.workout
+import apps.model.workout # important
 
 
 class User(db.Model):
@@ -34,10 +34,15 @@ class User(db.Model):
         nullable=False,
         unique=True
     )
-    
+
     password = db.Column(
-        db.String(255),
+        db.LargeBinary,
         nullable=False
+    )
+
+    refresh_token = db.Column(
+        db.String(255),
+        nullable=True
     )
 
     workouts = db.relationship(
@@ -50,6 +55,7 @@ class User(db.Model):
     def __init__(self, email, password):
         self.email = email
         self.password = password
+
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

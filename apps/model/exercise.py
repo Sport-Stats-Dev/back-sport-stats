@@ -17,11 +17,25 @@ class Exercise(db.Model):
     )
 
     name = db.Column(
-        db.String(100)
+        db.String(100),
+        nullable=False
     )
 
     description = db.Column(
         db.String(2000)
+    )
+
+    primary_muscle = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    secondary_muscles = db.Column(
+        db.String(100)
+    )
+
+    equipments = db.Column(
+        db.String(100)
     )
 
     __mapper_args__ = {
@@ -29,9 +43,20 @@ class Exercise(db.Model):
         'polymorphic_on': 'type',
     }
 
-    def __init__(self, name, description):
+    def __init__(
+            self,
+            name,
+            primary_muscle,
+            description=None,
+            secondary_muscles=None,
+            equipments=None
+            ):
         self.name = name
         self.description = description
+        self.primary_muscle = primary_muscle
+        self.secondary_muscles = secondary_muscles
+        self.equipments = equipments
+
 
 class SharedExercise(Exercise):
     __tablename__ = 'shared_exercise'
@@ -48,14 +73,29 @@ class SharedExercise(Exercise):
         'polymorphic_identity': 'shared',
     }
 
-    def __init__ (self, name, description, image=None, video=None):
-        super().__init__(name, description)
+    def __init__(
+            self,
+            name,
+            primary_muscle,
+            image,
+            video,
+            description=None,
+            secondary_muscles=None,
+            equipments=None
+            ):
+        super().__init__(name, primary_muscle, description, secondary_muscles, equipments)
         self.image = image
         self.video = video
+        self.name = name
+        self.description = description
+        self.primary_muscle = primary_muscle
+        self.secondary_muscles = secondary_muscles
+        self.equipments = equipments
+
 
 class UserExercise(Exercise):
     __tablename__ = 'user_exercise'
-    
+
     user_id = db.Column(
         db.String(36),
         db.ForeignKey("user.id")
@@ -65,11 +105,23 @@ class UserExercise(Exercise):
         'polymorphic_identity': 'user',
     }
 
-    def __init__ (self, name, description, user_id):
-        super().__init__(name, description)
+    def __init__(
+            self,
+            user_id,
+            name,
+            primary_muscle,
+            description=None,
+            secondary_muscles=None,
+            equipments=None
+            ):
+        super().__init__(name, primary_muscle, description, secondary_muscles, equipments)
         self.user_id = user_id
         self.name = name
         self.description = description
+        self.primary_muscle = primary_muscle
+        self.secondary_muscles = secondary_muscles
+        self.equipments = equipments
+
 
 class ExerciseSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -77,17 +129,21 @@ class ExerciseSchema(ma.SQLAlchemyAutoSchema):
         ordered = True
 
     image = ma.Method("get_image")
+
     def get_image(self, obj):
         if obj.type == "shared":
             return obj.image
         else:
             return None
+
     video = ma.Method("get_video")
+
     def get_video(self, obj):
         if obj.type == "shared":
             return obj.video
         else:
             return None
+
 
 # Init schema
 exercise_schema = ExerciseSchema()

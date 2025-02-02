@@ -1,14 +1,13 @@
 import argparse
 import openpyxl
 
-from apps.model.exercise import SharedExercise
-from apps.shared import db
+# COMMANDES POUR LA TRADUCTION
+# export PYTHONPATH=app/:$PYTHONPATH
+# python app/apps/utils/shared_exercise_utils.py --fonction get_translation_line --is_name True --is_fr True
 
 
 def get_translation_line(is_name, is_fr):
-    print("get_translation_line"
-        + f" is_name={is_name}"
-        + f" is_fr={is_fr}")
+    print("get_translation_line" + f" is_name={is_name}" + f" is_fr={is_fr}")
     workbook = openpyxl.load_workbook('app/apps/utils/shared_exercises_data.xlsx')
     worksheet = workbook.active
     if is_name:
@@ -34,10 +33,15 @@ def get_translation_line(is_name, is_fr):
     workbook.close()
     result += " other{} }\",\n"
 
-    with open('apps/utils/result.txt', 'w') as file:
+    with open('app/apps/utils/result.txt', 'w') as file:
         file.write(result)
 
+
 def fill_database():
+
+    from apps.model.exercise import SharedExercise
+    from apps.shared import db
+
     print("fill_database")
     workbook = openpyxl.load_workbook('app/apps/utils/shared_exercises_data.xlsx')
     worksheet = workbook.active
@@ -57,18 +61,24 @@ def fill_database():
             if exercise is not None:
                 exercise.image = row[5].value
                 exercise.video = row[6].value
+                exercise.primary_muscle = row[7].value
+                exercise.secondary_muscles = row[8].value
+                exercise.equipments = row[9].value
             else:
                 new_exercise = SharedExercise(
                     name=row[0].value,
-                    description="",
                     image=row[5].value,
-                    video=row[6].value
+                    video=row[6].value,
+                    primary_muscle=row[7].value,
+                    secondary_muscles=row[8].value,
+                    equipments=row[9].value,
                 )
                 db.session.add(new_exercise)
         line_number += 1
     workbook.close()
     db.session.commit()
     print(f"modified={modified} created={created}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Exécute une fonction spécifique.")

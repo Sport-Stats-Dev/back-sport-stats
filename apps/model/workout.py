@@ -11,7 +11,7 @@ class Workout(db.Model):
         primary_key=True,
         default=lambda: str(uuid.uuid4())
     )
-    
+
     user_id = db.Column(
         db.String(36),
         db.ForeignKey("user.id"),
@@ -51,12 +51,22 @@ class Workout(db.Model):
         self.duration = duration
         self.notes = notes
 
+    def get_volume(self):
+        return sum([e.get_volume() for e in self.executions])
+
+
 class WorkoutSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Workout
         ordered = True
-    
+
     executions = ma.Nested(ExecutionSchema, many=True)
+    user_id = ma.auto_field()
+    date = ma.Method("format_date")
+
+    def format_date(self, obj):
+        return int(obj.date.timestamp())
+
 
 # Init schema
 workout_schema = WorkoutSchema()

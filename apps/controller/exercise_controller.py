@@ -16,7 +16,7 @@ def get_exercise(exercise_id) -> Exercise:
     return exercise
 
 
-def get_paginated_exercises(page=None, per_page=None, order=None, name=None, locale=None) -> Tuple[List[Exercise], int]:
+def get_paginated_exercises(page=None, per_page=None, order=None, name=None) -> Tuple[List[Exercise], int]:
     queries = [UserExercise.__table__.c.id == Exercise.id and UserExercise.user_id == current_user.id]
 
     table = Exercise.query
@@ -36,7 +36,7 @@ def get_paginated_exercises(page=None, per_page=None, order=None, name=None, loc
                 sort = sort_field.desc()
             elif splited_order[1] == "asc":
                 sort = sort_field.asc()
-    
+
     if name is not None:
         queries.append(Exercise.name.ilike(f"%{name}%"))
 
@@ -44,16 +44,20 @@ def get_paginated_exercises(page=None, per_page=None, order=None, name=None, loc
     total = Exercise.query.filter(*queries).count()
     return result, total
 
+
 def get_all_exercises() -> List[Exercise]:
     user_exercises = UserExercise.query.filter_by(user_id=current_user.id).all()
     shared_exercises = SharedExercise.query.all()
-    
+
     return user_exercises + shared_exercises
 
 
-def set_exercise(payload, exercise_id=None):
-    name = payload["name"]
-    description = payload["description"]
+def set_exercise(payload, exercise_id=None) -> UserExercise:
+    name = payload.get("name")
+    description = payload.get("description")
+    primary_muscle = payload.get("primary_muscle")
+    secondary_muscles = payload.get("secondary_muscles")
+    equipments = payload.get("equipments")
 
     if exercise_id is not None:
         exercise = get_exercise(exercise_id)
@@ -63,15 +67,23 @@ def set_exercise(payload, exercise_id=None):
 
         exercise.name = name
         exercise.description = description
+        exercise.primary_muscle = primary_muscle
+        exercise.secondary_muscles = secondary_muscles
+        exercise.equipments = equipments
     else:
-        new_exercise = UserExercise(
+        exercise = UserExercise(
+            user_id=current_user.id,
             name=name,
             description=description,
-            user_id=current_user.id
+            primary_muscle=primary_muscle,
+            secondary_muscles=secondary_muscles,
+            equipments=equipments
         )
-        db.session.add(new_exercise)
+        db.session.add(exercise)
 
     db.session.commit()
+
+    return exercise
 
 
 def delete_exercise(exercise_id):
@@ -87,4 +99,23 @@ def delete_exercise(exercise_id):
             workout_controller.delete_workout(workout.id)
 
     db.session.delete(exercise)
+    db.session.commit()
+
+
+def merge_exercises(payload):
+    exercise_id = payload.get("exercise_id")
+    target_id = payload.get("target_id")
+
+    if exercise_id is None or target_id is None or exercise_id == target_id:
+        abort(400)
+
+    exercise = get_exercise(exercise_id)
+    get_exercise(target_id)
+
+    for execution in workout_controller.get_executions_by_exercise(exercise_id=exercise_id):
+        execution.exercise_id = target_id
+
+    if isinstance(exercise, UserExercise):
+        db.session.delete(exercise)
+
     db.session.commit()
